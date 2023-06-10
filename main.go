@@ -21,22 +21,25 @@ func main() {
 type TokenType int64
 
 const (
-	Unknown TokenType = iota
-	LessThan
-	LessThanEqual
-	GreaterThan
-	GreaterThanEqual
-	And
-	Or
-	True
-	False
-	Plus
-	Minus
-	Multiply
-	Divide
-	Number
-	String
-	Variable
+	Unknown          TokenType = iota
+	Whitespace                 // " "
+	LessThan                   // ")<
+	LessThanEqual              // "<="
+	GreaterThan                // ">"
+	GreaterThanEqual           // ">="
+	And                        // "and" | "And" | "aNd" | "anD" | "ANd" | "aND" | "AND"
+	Or                         // "or" | "Or" | "oR" | "OR"
+	True                       // "TRUE"
+	False                      // "FALSE"
+	Plus                       // "+"
+	Minus                      // "-"
+	Multiply                   // "*"
+	Divide                     // "/"
+	Number                     // DIGITS
+	String                     // "\"CHARACTERS\""
+	Variable                   // CHARACTERS_DIGITS_UNDERSCORES
+	OpenParentheses            // "("
+	CloseParentheses           // ")"
 )
 
 type token struct {
@@ -54,6 +57,7 @@ func lexer(data []byte) []token {
 		switch s {
 		case " ":
 			curPos = curPos + 1
+			tokens = append(tokens, token{tokenType: Whitespace, startPos: tokenStartPosition, text: s})
 		case "+":
 			curPos = curPos + 1
 			tokens = append(tokens, token{tokenType: Plus, startPos: tokenStartPosition, text: s})
@@ -86,6 +90,12 @@ func lexer(data []byte) []token {
 				// token is <
 				tokens = append(tokens, token{tokenType: LessThan, startPos: tokenStartPosition, text: "<"})
 			}
+		case "(":
+			curPos = curPos + 1
+			tokens = append(tokens, token{tokenType: OpenParentheses, startPos: tokenStartPosition, text: "("})
+		case ")":
+			curPos = curPos + 1
+			tokens = append(tokens, token{tokenType: CloseParentheses, startPos: tokenStartPosition, text: ")"})
 		default:
 			var b bytes.Buffer
 			for curPos < len(data) && string(data[curPos]) != " " {
