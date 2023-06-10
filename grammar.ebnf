@@ -1,0 +1,57 @@
+grammar = { boolean_expression };
+(* 
+       bool ...and bool
+       bool ...or bool
+       bool and para_bool, para_bool and bool
+       bool or para_bool, para_bool or bool
+       para_bool ...(and|or) para_bool
+ *)
+boolean_expression = boolean_comparison |
+                     or_boolean_expression |
+                     and_boolean_expression;
+
+parenthetical_boolean_expression = open_parenthesis, (or_boolean_expression | and_boolean_expression), close_parenthesis;
+or_boolean_expression = (boolean_calculation | parenthetical_boolean_expression), or, (boolean_calculation | parenthetical_boolean_expression | or_boolean_expression);
+and_boolean_expression = (boolean_calculation | parenthetical_boolean_expression), and, (boolean_calculation | parenthetical_boolean_expression | and_boolean_expression);
+
+boolean_calculation = (simple_boolean_calculation | parenthetical_boolean_calculation);
+parenthetical_boolean_calculation = open_parenthesis, (and_boolean_calculation | or_boolean_calculation), close_parenthesis;
+
+boolean_comparison = and_boolean_calculation | or_boolean_calculation;
+(* bool and bool ...and bool *)
+and_boolean_calculation = simple_boolean_calculation, and, (simple_boolean_calculation | and_boolean_calculation);
+(* bool or bool ...or bool *)
+or_boolean_calculation = simple_boolean_calculation, or, (simple_boolean_calculation | or_boolean_calculation);
+
+simple_boolean_calculation = (variable | numeric), {whitespace}, comparison_symbol, {whitespace}, (variable | numeric);
+
+variable = letter , { letter | digit | "_" } ;
+string = '"', {all_characters - '"'}, '"';
+
+numeric = float | integer;
+float = integer, ".", {digit};
+integer = "0" | ["-"], (non_zero_digit, {digit});
+
+boolean_operator = and | or;
+and = "AND" | "and";
+or = "OR" | "or";
+
+mathmatical_symbol = "+" | "-" | "*" | "/";
+comparison_symbol = ">" | ">=" | "<" | "<=";
+
+open_parenthesis = "(";
+close_parenthesis = ")";
+digit = "0" | non_zero_digit;
+non_zero_digit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+
+letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+       | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+       | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+       | "V" | "W" | "X" | "Y" | "Z" | "a" | "b"
+       | "c" | "d" | "e" | "f" | "g" | "h" | "i"
+       | "j" | "k" | "l" | "m" | "n" | "o" | "p"
+       | "q" | "r" | "s" | "t" | "u" | "v" | "w"
+       | "x" | "y" | "z" ;
+whitespace = ?white space characters?;
+all_characters = ?all visible characters?;
+
